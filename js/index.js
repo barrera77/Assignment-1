@@ -12,15 +12,16 @@ albumForm.addEventListener("submit", onCreateAlbum);
 albumTitle.addEventListener("input", onHandleAlbumTitleInput);
 albumDescription.addEventListener("input", onHandleAlbumDescriptionInput);
 
-function onSelectAlbumArt(e) {
-  e.currentTarget.value;
+function onSelectAlbumArt() {
+  const selectedAlbum = selectAlbumArt.value;
   //Check if user selected an image
-  if (selectAlbumArt.value == "") {
+  if (selectedAlbum == "") {
     invalidAlbum.classList.add("d-flex");
     console.log("Select an image");
   } else {
     invalidAlbum.classList.remove("d-flex");
-    console.log(selectAlbumArt.value);
+    console.log(selectedAlbum);
+    return selectedAlbum;
   }
 }
 
@@ -29,10 +30,11 @@ function onHandleAlbumTitleInput() {
   //check for valid title
   if (!isValidTitle(title)) {
     invalidTitle.classList.add("d-flex");
-    console.log(`"Title has to be 0-20 chars ${title.length}"`);
+    console.log("No title");
   } else {
-    console.log(title + " is " + title.length + " chars");
+    console.log(title);
     invalidTitle.classList.remove("d-flex");
+    return title;
   }
 }
 
@@ -40,11 +42,12 @@ function onHandleAlbumDescriptionInput() {
   const description = albumDescription.value.trim();
   //check for valid description
   if (!isValidDescription(description)) {
-    console.log(description + " is " + description.length + " chars");
+    console.log("no description");
     invalidDescription.classList.add("d-flex");
   } else {
     invalidDescription.classList.remove("d-flex");
-    console.log(`"description has to be 0-40 chars ${description.length}"`);
+    console.log(description);
+    return description;
   }
 }
 
@@ -59,20 +62,16 @@ function isValidDescription(description) {
 }
 
 function isSuccess() {
-  if (
-    onHandleAlbumTitleInput() &&
-    onHandleAlbumDescriptionInput() &&
-    onSelectAlbumArt()
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  const isTitleValid = onHandleAlbumTitleInput();
+  const isDescriptionValid = onHandleAlbumDescriptionInput();
+  const isArtValid = onSelectAlbumArt();
+
+  return isTitleValid && isDescriptionValid && isArtValid;
 }
 
 function onCreateAlbum(e) {
   e.preventDefault();
-  if (isSuccess) {
+  if (isSuccess()) {
     allAlbumsList.innerHTML += `<div class="col">
 	<div class="card shadow-sm">
 		<img class="bd-placeholder-img card-img-top" src="${selectAlbumArt.value}" />
@@ -82,7 +81,10 @@ function onCreateAlbum(e) {
 		</div>
 	</div>
 </div>`;
-  } else {
-    allAlbumsList.classList.add("d-none");
+
+    //Reset elements
+    albumTitle.value = "";
+    albumDescription.value = "";
+    selectAlbumArt.value = "";
   }
 }
